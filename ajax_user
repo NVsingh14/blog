@@ -1,0 +1,533 @@
+<?php
+session_start();
+error_reporting(0);
+include("config-cms.php");
+//include("../library/class.imageresizer.php");
+
+$REQDataRaw = file_get_contents("php://input");
+$REQData = json_decode($REQDataRaw);
+//$REQ = $REQData->call;
+
+$type =  trustme($REQData->type);
+$type;
+switch($type)
+{   
+        case "saveData":
+                saveData();
+                break;
+        case "list_data":
+            list_data();
+            break;
+        case "getUserData":
+            getUserData();
+            break;
+
+        case "deleteData":
+            deleteData();
+            break;
+        case "deleteAllData":
+            deleteAllData();
+            break;
+        case "updateStatus":
+            updateStatus();
+            break;
+}
+
+
+
+function saveData(){
+    
+    global $dCON, $REQData;
+    
+    $session_id = session_id();   
+    $IP = $_SERVER['REMOTE_ADDR'];
+    $TIME = date("Y-m-d H:i:s");
+    $RETURN_ARRAY = array();
+    
+    $FOLDER_NAME = "";
+    $FOLDER_NAME = CMS_UPLOAD_FOLDER_RELATIVE_PATH . TEMP_UPLOAD . "/";
+
+
+    $input_type = trustme($REQData->input_type);
+    $name = trustme($REQData->name);
+    $email = trustme($REQData->email);
+    $user_id = intval($REQData->user_id);
+
+
+if($input_type=='textField')
+{
+if(intval($user_id)== intval(0))
+{
+
+
+$CHK = checkDuplicate(USER_TBL,"status~~~email","2~~~$email","!=~~~=~~~=","");
+if(intval($CHK) == intval(0) )
+{
+$MAXID = getMaxId(USER_TBL,"user_id");
+
+    $SQL ="";
+    $SQL .= " INSERT INTO " . USER_TBL . " SET ";
+    $SQL .= " user_id=:user_id, ";
+    $SQL .= " name=:name, ";
+    $SQL .= " email=:email, ";
+    $SQL .= " add_ip=:add_ip, ";
+    $SQL .= " add_by=:add_by, ";
+    $SQL .= " add_time=:add_time ";
+    //echo $SQL;
+    $stmt = $dCON->prepare($SQL);
+    $stmt->bindParam(":user_id",$MAXID);
+    $stmt->bindParam(":name",$name);
+    $stmt->bindParam(":email",$email);
+    $stmt->bindParam(":add_ip",$IP);
+    $stmt->bindParam(":add_by",$_SESSION['USERNAME']);
+    $stmt->bindParam(":add_time",$TIME);
+
+    $rs = $stmt->execute();
+    $stmt->closeCursor();
+
+}
+else
+{
+    $rs=2;
+}
+
+}
+
+else if(intval($user_id)>intval(0))
+{
+    $SQL ="";
+    $SQL .= " UPDATE " . USER_TBL . " SET ";
+    $SQL .= " name=:name, ";
+    $SQL .= " email=:email, ";
+    $SQL .= " update_ip=:update_ip, ";
+    $SQL .= " update_by=:update_by, ";
+    $SQL .= " update_time=:update_time ";
+    $SQL .= " WHERE user_id=:user_id ";
+    //echo $SQL;
+    $stmt = $dCON->prepare($SQL);
+    $stmt->bindParam(":user_id",$MAXID);
+    $stmt->bindParam(":name",$name);
+    $stmt->bindParam(":email",$email);
+    $stmt->bindParam(":update_ip",$IP);
+    $stmt->bindParam(":update_by",$_SESSION['USERNAME']);
+    $stmt->bindParam(":update_time",$TIME);
+    $stmt->bindParam(":user_id",$user_id);
+
+    $rs = $stmt->execute();
+    $stmt->closeCursor();
+}
+
+
+}
+else if($input_type=='file')
+{
+$fileNAME = "";
+$fileNAME = trustme($REQData->document_file_disp);    
+$EXT = trustme($REQData->file_extension);
+//echo $fileNAME;
+     
+if( trim($EXT) == "xls"){
+    //echo "terme";
+    $sheetno = 1;// (int)($_REQUEST['sheetno']); 
+    require_once LOGIN_NODE_MODULES . 'Excel/xls/reader.php'; 
+    
+    // ExcelFile($filename, $encoding);
+    $data = new Spreadsheet_Excel_Reader();
+    $data->setOutputEncoding('CP1251'); 
+    $data->read($fileNAME);
+    
+    $Start_ROW = 2;
+        
+    
+    $STARTNo = 0;
+    $ENDNo = 0;
+    $STARTNo = $sheetno-1;
+    $ENDNo = $sheetno; 
+    
+    $DUPSTR = ""; 
+    $SAVESTR = ""; 
+    $OVERSTR = ""; 
+    $BLOCKSTR = "";
+     
+    $idx = 0;
+
+    for($sheet=$STARTNo;$sheet<$ENDNo;$sheet++)
+    {  
+        for ($j=$Start_ROW; $j<=$data->sheets[$sheet]['numRows']; $j++)
+        {
+            $MAXID = getMaxId(USER_TBL,"user_id");
+            $NAME = trim( $data->sheets[$sheet]['cells'][$j][1] ); 
+            $EMAIL = trim( $data->sheets[$sheet]['cells'][$j][2] ); 
+             /* echo "<pre>";
+              echo $event_date."===".$NAME."----".$EMAIL."---".$MAXID;
+              echo "</pre>";die();*/
+            $CHK = checkDuplicate(USER_TBL,"status~~~email","2~~~$EMAIL","!=~~~=~~~=","");
+                if(intval($CHK) == intval(0) )
+                {
+            
+                $SQL ="";
+                $SQL .= " INSERT INTO " . USER_TBL . " SET ";
+                $SQL .= " user_id=:user_id, ";
+                $SQL .= " name=:name, ";
+                $SQL .= " email=:email, ";
+                $SQL .= " add_ip=:add_ip, ";
+                $SQL .= " add_by=:add_by, ";
+                $SQL .= " add_time=:add_time ";
+                //echo $SQL;
+                $stmt = $dCON->prepare($SQL);
+                $stmt->bindParam(":user_id",$MAXID);
+                $stmt->bindParam(":name",$NAME);
+                $stmt->bindParam(":email",$EMAIL);
+                //$stmt->bindParam(":event_date",$event_date);
+                $stmt->bindParam(":add_ip",$IP);
+                $stmt->bindParam(":add_by",$_SESSION['USERNAME']);
+                $stmt->bindParam(":add_time",$TIME);
+
+                $rs = $stmt->execute();
+                $stmt->closeCursor();
+
+                }
+                else
+                {
+                    $rs=2;
+                }
+                if( intval($rs) > intval(0)){
+                   //$rs = intval(1);
+                   unlink($fileNAME);
+                   }   
+        }
+         unlink($fileNAME);               
+        
+    }
+
+
+    }
+    else if( trim($EXT) == "xlsx"){
+        //echo "enter";exit;
+        require_once('../node_modules/Excel/xlsx/excel_reader2.php'); 
+        require_once('../node_modules/Excel/xlsx/simplexlsx.class.php');
+        $data = new SimpleXLSX($fileNAME); 
+        //print_r($data);
+        $idx = 0;
+        foreach($data->rows(1) as $key => $val)
+        {
+            if($key > intval(0))
+            {
+                $MAXID = getMaxId(USER_TBL,"user_id");
+                $NAME = trim($val[0]);
+                $EMAIL = trim($val[1]);
+                //echo $NAME."----".$EMAIL;
+                $CHK = checkDuplicate(USER_TBL,"status~~~email","2~~~$EMAIL","!=~~~=~~~=","");
+                    if(intval($CHK) == intval(0) )
+                    {
+                        
+                    $SQL ="";
+                    $SQL .= " INSERT INTO " . USER_TBL . " SET ";
+                    $SQL .= " user_id=:user_id, ";
+                    $SQL .= " name=:name, ";
+                    $SQL .= " email=:email, ";
+                    $SQL .= " add_ip=:add_ip, ";
+                    $SQL .= " add_by=:add_by, ";
+                    $SQL .= " add_time=:add_time ";
+                    //echo $SQL;
+                    $stmt = $dCON->prepare($SQL);
+                    $stmt->bindParam(":user_id",$MAXID);
+                    $stmt->bindParam(":name",$NAME);
+                    $stmt->bindParam(":email",$EMAIL);
+                    //$stmt->bindParam(":event_date",$event_date);
+                    $stmt->bindParam(":add_ip",$IP);
+                    $stmt->bindParam(":add_by",$_SESSION['USERNAME']);
+                    $stmt->bindParam(":add_time",$TIME);
+
+                    $rs = $stmt->execute();
+                    $stmt->closeCursor();
+                    }
+                    else
+                    {
+                        $rs=2;
+                    }       
+                
+                
+            }
+            
+            if( intval($rs) > intval(0)){
+                //$rs = intval(1);
+                unlink($fileNAME);
+            }
+             
+        }
+         
+        unlink($fileNAME);
+
+
+        }
+       
+    } // end of else if(input_type=file)
+
+
+         switch($rs)
+            {
+                case "1":
+                        $RETURN_ARRAY['SUCCESS'] = 1;
+                        $RETURN_ARRAY['MSG'] = "&#x2714; Successfully saved.";
+                        break;
+                case "2":
+                        
+                        $RETURN_ARRAY['SUCCESS'] = 2;
+                        $RETURN_ARRAY['MSG'] = "&#x2757; Already Exists.";
+                        break; 
+                default:
+                        $RETURN_ARRAY['SUCCESS'] = 0;
+                        $RETURN_ARRAY['MSG'] = "&#x2718; Sorry cannot process your request.";
+                        break;
+            }
+
+            echo json_encode($RETURN_ARRAY);
+}
+
+
+
+function list_data()
+{  
+    global $dCON, $REQData;
+    /*echo "<pre>";
+    print_r($REQData);
+    echo "</pre>";*/
+    $page = intval($REQData->page) == 0 ? 1 : $REQData->page;
+    $name = trustme($REQData->search_user_name);
+    $email = trustme($REQData->search_user_email);
+    $search_invitation_status = trustme($REQData->search_invitation_status);
+    $searchArr = array();
+    
+    $RETURN_ARRAY = array();
+    $RETURN_ARRAY['searchedFields'] = array();
+    
+    $search = "";
+    if( trim($name) != "" )
+    {
+        $search .= " AND ( B.name = '".$name."' or B.name like '%".$name."%' )" ;
+      
+        $RETURN_ARRAY['searchedFields'][] = $name;
+    }
+
+    if( trim($email) != "" )
+    {
+        $search .= " AND ( B.email = '".$email."' or B.email like '%".$email."%' )" ;
+      
+        $RETURN_ARRAY['searchedFields'][] = $email;
+    }
+
+    if(trim($search_invitation_status)=='sent')
+    {
+        $rsvp=1;
+        $search .= " AND B.rsvp = '".$rsvp."' ";
+        $RETURN_ARRAY['searchedFields'][] = "Invitation Sent" ;
+    }
+    else if(trim($search_invitation_status)=='accept')
+    {
+        $rsvp=2;
+        $search .= " AND B.rsvp = '".$rsvp."' ";
+        $RETURN_ARRAY['searchedFields'][] = "Invitation Accepted" ;   
+    }
+    else if(trim($search_invitation_status)=='not sent')
+    {
+        $rsvp=0;
+        $search .= " AND B.rsvp = '".$rsvp."' ";
+        $RETURN_ARRAY['searchedFields'][] = "Invitation Not Sent" ;   
+    }
+
+    $SQL = "";
+    $SQL .= " SELECT * ";
+    $SQL .= " FROM " .  USER_TBL . " AS B ";
+    $SQL .= " WHERE B.status <> '2' ";
+    $SQL .= " $search ";
+    $SQL .= " ORDER BY user_id ASC ";
+    //echo $SQL;
+    
+    $SQL_COUNT  = "";
+    $SQL_COUNT .= " SELECT COUNT(*) AS CT FROM ( ";
+    $SQL_COUNT .= $SQL;
+    $SQL_COUNT .= " ) as aa ";
+    
+    
+    $stmtCnt =  $dCON->prepare($SQL_COUNT);
+    $stmtCnt->execute($searchArr);
+    $noOfRecords_row = $stmtCnt->fetchObject();
+    $stmtCnt->closeCursor();
+    $noOfRecords = intval($noOfRecords_row->CT);
+
+    $rowsPerPage = 25;
+
+    $page = intval($page) - 1;
+    $offset = $rowsPerPage * $page ;
+
+    $SQL .= " LIMIT " . $offset . "," . $rowsPerPage;
+
+    $stmt = $dCON->prepare($SQL);
+    $stmt->execute($searchArr);
+    $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
+    
+    $RETURN_ARRAY['data'] = $row;
+    $RETURN_ARRAY['total_records'] = $noOfRecords;
+    
+    echo json_encode($RETURN_ARRAY);    
+          
+}
+
+
+function getUserData()
+{
+        global $dCON,$REQData;
+
+        $user_id = intval($REQData->user_id);
+
+        $SQL= "";
+        $SQL .= " SELECT T.* ";
+        $SQL .= " FROM ". USER_TBL . " AS T ";
+        $SQL .= " WHERE T.user_id=:user_id AND T.status <> 2 ";
+
+        $stmt = $dCON->prepare( $SQL );
+        $stmt->bindParam(":user_id", $user_id);
+        $stmt->execute();
+        $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        
+
+        $RETURN_DATA = array();
+        $RETURN_DATA['data'] = $row;
+        
+        echo json_encode($RETURN_DATA); 
+}
+
+
+
+function deleteData()
+{
+    global $dCON, $REQData;
+    
+    $TIME = date("Y-m-d H:i:s");
+    $IP = trustme($_SERVER['REMOTE_ADDR']);
+    
+    $user_id = intval($REQData->user_id);
+    
+    $STR  = "";
+    $STR .= " UPDATE  " . USER_TBL . "  SET "; 
+    $STR .= " status = '2', ";
+    $STR .= " update_ip = :update_ip, ";
+    $STR .= " update_by = :update_by, ";
+    $STR .= " update_time = :update_time ";
+    $STR .= " WHERE user_id = :user_id ";
+    $sDEF = $dCON->prepare($STR); 
+    $sDEF->bindParam(":update_ip", $IP);
+    $sDEF->bindParam(":update_by", $_SESSION['USERNAME']);
+    $sDEF->bindParam(":update_time", $TIME);
+    $sDEF->bindParam(":user_id", intval($user_id));
+    $dRES = $sDEF->execute();
+    $sDEF->closeCursor();   
+    
+    if(intval($dRES) > 0)
+    {
+        $RETURN_ARR = array("SUCCESS" => 1, "MSG" => "Successfully Deleted");
+    }
+    else
+    {
+        $RETURN_ARR = array("SUCCESS" => 0, "MSG" => "Sorry Cannot Process Your Request");
+    }
+    
+    echo json_encode($RETURN_ARR);
+}
+
+function deleteAllData()
+{
+    global $dCON, $REQData;
+    
+    $indexIdsArray = $REQData->DIDS;
+    $successCTR = 0;
+    
+    $TIME = date("Y-m-d H:i:s");
+    $IP = trustme($_SERVER['REMOTE_ADDR']);
+    
+    
+    foreach($indexIdsArray as $indexIdObj)
+    {
+       $stmtDel = $dCON->prepare(" UPDATE " .USER_TBL . " SET `status` = '2',update_ip =:update_ip,update_by = :update_by, update_time = :update_time  WHERE user_id = :user_id ");
+        $stmtDel->bindParam(":update_ip", $IP);
+        $stmtDel->bindParam(":update_by", $_SESSION['USERNAME']);
+        $stmtDel->bindParam(":update_time", $TIME);
+        $stmtDel->bindParam(":user_id", $indexIdObj->user_id);
+        $dRES = $stmtDel->execute();
+        $stmtDel->closeCursor();
+
+       
+    }
+
+    if($dRES > 0)
+    {
+        $RETURN_ARR = array("SUCCESS" => 1, "MSG" => "Successfully Deleted");
+    }
+    else
+    {
+        $RETURN_ARR = array("SUCCESS" => 0, "MSG" => "Sorry Cannot Process Your Request");
+    }
+
+    echo json_encode($RETURN_ARR);
+
+}
+
+function updateStatus()
+{
+    global $dCON, $REQData;
+       
+    $TIME = date("Y-m-d H:i:s");
+    
+    $ID = intval($REQData->user_id);
+    $VAL = trustme($REQData->status);                           
+    
+    $TIME = date("Y-m-d H:i:s");
+    $IP = trustme($_SERVER['REMOTE_ADDR']);
+     
+    $STR  = "";
+    $STR .= " UPDATE  " . USER_TBL . "  SET "; 
+    $STR .= " status = :status, ";
+    $STR .= " update_by = :update_by, ";
+    $STR .= " update_ip = :update_ip, ";
+    $STR .= " update_time = :update_time ";
+    $STR .= " WHERE user_id = :user_id ";
+    $sDEF = $dCON->prepare($STR); 
+    $sDEF->bindParam(":status", $VAL); 
+    $sDEF->bindParam(":update_ip", $IP);
+    $sDEF->bindParam(":update_by", $_SESSION['USERNAME']);
+    $sDEF->bindParam(":update_time", $TIME);
+    $sDEF->bindParam(":user_id", $ID);
+    $RES = $sDEF->execute();
+    $sDEF->closeCursor();         
+    
+    $RETURN_ARRAY = array();
+    
+    if ( intval($RES) == intval(1) )
+    {     
+        echo '~~~1~~~DONE~~~' . $ID . "~~~"; 
+        
+        $RETURN_ARRAY['SUCCESS'] = 1;
+        $RETURN_ARRAY['MSG'] = "Done";
+     }
+    else
+    {
+        $RETURN_ARRAY['SUCCESS'] = 0;
+        $RETURN_ARRAY['MSG'] = "Error";
+    }
+    
+    echo json_encode($RETURN_ARRAY);     
+}
+?>
+
+
+
+
+
+
+
+
+
+
