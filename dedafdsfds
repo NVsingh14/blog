@@ -1,0 +1,347 @@
+/*
+SQLyog Community v12.2.5 (32 bit)
+MySQL - 5.6.24 : Database - abtutorials_new
+*********************************************************************
+*/
+
+/*!40101 SET NAMES utf8 */;
+
+/*!40101 SET SQL_MODE=''*/;
+
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`abtutorials_new` /*!40100 DEFAULT CHARACTER SET utf8 */;
+
+USE `abtutorials_new`;
+
+/*Table structure for table `tbl_admin` */
+
+DROP TABLE IF EXISTS `tbl_admin`;
+
+CREATE TABLE `tbl_admin` (
+  `user_id` int(10) NOT NULL DEFAULT '0',
+  `user_type` varchar(50) DEFAULT 'USER',
+  `user_name` varchar(100) NOT NULL DEFAULT '',
+  `user_email` varchar(150) DEFAULT '',
+  `user_login` varchar(50) DEFAULT '',
+  `user_password` varchar(20) NOT NULL DEFAULT '',
+  `user_mobile` varchar(50) DEFAULT '',
+  `user_permission` varchar(2000) DEFAULT '',
+  `status` tinyint(1) DEFAULT '1',
+  `position` int(10) DEFAULT '0',
+  `add_ip` varchar(50) DEFAULT '000.000.000',
+  `add_by` varchar(100) DEFAULT '',
+  `add_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `update_ip` varchar(50) DEFAULT '000.000.000',
+  `update_by` varchar(100) DEFAULT '',
+  `update_time` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`user_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1072 DEFAULT CHARSET=latin1;
+
+/*Data for the table `tbl_admin` */
+
+insert  into `tbl_admin`(`user_id`,`user_type`,`user_name`,`user_email`,`user_login`,`user_password`,`user_mobile`,`user_permission`,`status`,`position`,`add_ip`,`add_by`,`add_time`,`update_ip`,`update_by`,`update_time`) values 
+(1000,'SUPER ADMIN','Admin','','admin','ids@1234','','',1,1,'192.168.1.13','Super Admin','2016-07-08 13:29:29',NULL,NULL,'0000-00-00 00:00:00');
+
+/*Table structure for table `tbl_banner` */
+
+DROP TABLE IF EXISTS `tbl_banner`;
+
+CREATE TABLE `tbl_banner` (
+  `banner_id` int(10) NOT NULL DEFAULT '0',
+  `banner_image` varchar(500) DEFAULT '',
+  `banner_title` varchar(150) DEFAULT '',
+  `image_id` tinyint(1) DEFAULT '0',
+  `status` tinyint(1) DEFAULT '1',
+  `position` int(10) DEFAULT '0',
+  `add_ip` varchar(50) DEFAULT '000.000.000',
+  `add_by` varchar(100) DEFAULT '',
+  `add_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `update_ip` varchar(50) DEFAULT '000.000.000',
+  `update_by` varchar(100) DEFAULT '',
+  `update_time` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`banner_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `tbl_banner` */
+
+insert  into `tbl_banner`(`banner_id`,`banner_image`,`banner_title`,`image_id`,`status`,`position`,`add_ip`,`add_by`,`add_time`,`update_ip`,`update_by`,`update_time`) values 
+(1001,'1001-jacket.jpg','<p>Image Banner One</p>',1,1,0,'192.168.1.87','admin','2018-01-23 17:11:38','192.168.1.87','admin','2018-01-23 17:40:35'),
+(1002,'1002-cloth.jpg','<p>Image Banner Two</p>',1,1,1,'192.168.1.87','admin','2018-01-23 17:34:54','192.168.1.87','admin','2018-01-23 17:40:45'),
+(1003,'1003-jumble.jpg','<p>Banner Three</p>',1,1,2,'192.168.1.87','admin','2018-01-23 17:40:54','192.168.1.44','admin','2018-01-29 11:17:01'),
+(1004,'1004-penrose-triangle-illusion-gif.gif','<p>believe</p>',1,1,3,'192.168.1.87','admin','2018-01-24 16:58:08','192.168.1.44','admin','2018-01-29 11:14:30'),
+(1005,'1005-17th-thgrp-pm.jpg','',1,2,2,'192.168.1.44','admin','2018-01-29 11:17:38','192.168.1.44','admin','2018-01-29 11:18:37');
+
+/*Table structure for table `tbl_counter` */
+
+DROP TABLE IF EXISTS `tbl_counter`;
+
+CREATE TABLE `tbl_counter` (
+  `counter_id` int(10) NOT NULL DEFAULT '0',
+  `title_value` varchar(250) DEFAULT '',
+  `counter_value` varchar(250) DEFAULT '',
+  `status` tinyint(1) DEFAULT '1',
+  `position` int(10) DEFAULT '0',
+  `add_ip` varchar(50) DEFAULT '000.000.000',
+  `add_by` varchar(100) DEFAULT '',
+  `add_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `update_ip` varchar(50) DEFAULT '000.000.000',
+  `update_by` varchar(100) DEFAULT '',
+  `update_time` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`counter_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `tbl_counter` */
+
+insert  into `tbl_counter`(`counter_id`,`title_value`,`counter_value`,`status`,`position`,`add_ip`,`add_by`,`add_time`,`update_ip`,`update_by`,`update_time`) values 
+(1001,'TESTing','Test',2,0,'192.168.1.87','admin','2017-12-31 12:29:18','192.168.1.44','admin','2017-12-31 12:33:10'),
+(1002,'Since 1994','Total Students 3000',2,0,'192.168.1.87','admin','2017-12-31 12:31:41','192.168.1.44','admin','2017-12-31 12:33:23'),
+(1003,'Since 1994','3000 students',1,0,'192.168.1.44','admin','2017-12-31 12:34:09','192.168.1.87','admin','2017-12-31 13:05:38'),
+(1004,'2017','1 out of 2 students qualified 3 year DU law',1,0,'192.168.1.44','admin','2017-12-31 12:35:09','192.168.1.44','admin','2017-12-31 12:36:04');
+
+/*Table structure for table `tbl_gallery` */
+
+DROP TABLE IF EXISTS `tbl_gallery`;
+
+CREATE TABLE `tbl_gallery` (
+  `gallery_id` int(10) NOT NULL AUTO_INCREMENT,
+  `gallery_image` varchar(200) DEFAULT '',
+  `image_id` tinyint(1) DEFAULT '0',
+  `image_caption` varchar(200) DEFAULT '',
+  `status` tinyint(1) DEFAULT '1',
+  `position` int(10) DEFAULT '0',
+  `add_ip` varchar(50) DEFAULT '000.000.000.000',
+  `add_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `add_by` varchar(100) DEFAULT '',
+  `update_ip` varchar(50) DEFAULT '000.000.000.000',
+  `update_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `update_by` varchar(100) DEFAULT '',
+  PRIMARY KEY (`gallery_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1018 DEFAULT CHARSET=latin1;
+
+/*Data for the table `tbl_gallery` */
+
+insert  into `tbl_gallery`(`gallery_id`,`gallery_image`,`image_id`,`image_caption`,`status`,`position`,`add_ip`,`add_time`,`add_by`,`update_ip`,`update_time`,`update_by`) values 
+(1002,'1002-image.jpg',1,'Winter Wear',1,2,'192.168.1.87','2018-01-23 15:18:15','admin','192.168.1.44','2018-01-29 11:02:48','admin'),
+(1004,'1004-image.jpg',1,'Gallery Image three',2,1,'192.168.1.87','2018-01-23 15:18:15','admin','192.168.1.44','2018-01-29 10:57:18','admin'),
+(1005,'1005-image.jpg',1,'Gallery Image four',2,2,'192.168.1.87','2018-01-23 15:18:15','admin','192.168.1.44','2018-01-29 10:57:16','admin'),
+(1008,'1008-image.jpg',1,'Lecture on Events',1,7,'192.168.1.44','2018-01-25 12:37:32','admin','192.168.1.44','2018-01-29 11:03:06','admin'),
+(1009,'1009-image.jpg',1,'newspaper',1,5,'192.168.1.44','2018-01-25 16:52:35','admin','192.168.1.44','2018-01-29 10:39:21','admin'),
+(1011,'1011-image.jpg',1,'Mountains',1,4,'192.168.1.44','2018-01-25 16:55:25','admin','192.168.1.44','2018-01-29 10:40:00','admin'),
+(1012,'1012-image.jpg',1,'Flower',1,9,'192.168.1.44','2018-01-29 10:40:21','admin','192.168.1.44','2018-01-29 11:01:15','admin'),
+(1013,'1013-image.jpg',1,'Swimming Pool',1,6,'192.168.1.44','2018-01-29 10:41:17','admin','192.168.1.44','2018-01-29 11:02:05','admin'),
+(1014,'1014-image.jpg',1,'8th deleted',2,8,'192.168.1.44','2018-01-29 10:43:16','admin','192.168.1.44','2018-01-29 10:51:17','admin'),
+(1015,'1015-image.jpg',1,'Group Photo Session',1,3,'192.168.1.44','2018-01-29 10:51:54','admin','192.168.1.44','2018-01-29 11:02:27','admin'),
+(1016,'1016-image.png',1,'',2,9,'192.168.1.44','2018-01-29 10:54:59','admin','192.168.1.44','2018-01-29 10:55:05','admin'),
+(1017,'1017-image.jpg',1,'Girl',0,8,'192.168.1.44','2018-01-29 10:55:21','admin','192.168.1.44','2018-01-29 17:01:42','admin');
+
+/*Table structure for table `tbl_home_pop_up` */
+
+DROP TABLE IF EXISTS `tbl_home_pop_up`;
+
+CREATE TABLE `tbl_home_pop_up` (
+  `table_id` int(11) NOT NULL AUTO_INCREMENT,
+  `image_name` varchar(200) DEFAULT NULL,
+  `image_id` tinyint(1) DEFAULT '0',
+  `image_caption` varchar(200) DEFAULT '',
+  `status` tinyint(1) DEFAULT NULL,
+  `position` int(10) DEFAULT NULL,
+  `add_ip` varchar(50) DEFAULT '000.000.000',
+  `add_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `add_by` varchar(100) DEFAULT '',
+  `update_ip` varchar(50) DEFAULT '000.000.000',
+  `update_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `update_by` varchar(100) DEFAULT '',
+  PRIMARY KEY (`table_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1002 DEFAULT CHARSET=latin1;
+
+/*Data for the table `tbl_home_pop_up` */
+
+insert  into `tbl_home_pop_up`(`table_id`,`image_name`,`image_id`,`image_caption`,`status`,`position`,`add_ip`,`add_time`,`add_by`,`update_ip`,`update_time`,`update_by`) values 
+(1001,'1001-image.jpg',1,'',NULL,NULL,'000.000.000','2018-01-23 17:03:20','admin','192.168.1.44','2018-01-24 17:30:56','admin');
+
+/*Table structure for table `tbl_news` */
+
+DROP TABLE IF EXISTS `tbl_news`;
+
+CREATE TABLE `tbl_news` (
+  `news_id` int(10) NOT NULL DEFAULT '0',
+  `news_ref` varchar(150) DEFAULT '',
+  `news_title` varchar(250) DEFAULT '',
+  `news_description` text,
+  `news_image` varchar(500) DEFAULT '',
+  `image_id` tinyint(1) DEFAULT '0',
+  `external_link` varchar(100) DEFAULT '',
+  `start_date` date DEFAULT '0000-00-00',
+  `end_date` date DEFAULT '0000-00-00',
+  `display_on_home` int(10) DEFAULT '0',
+  `status` tinyint(1) DEFAULT '1',
+  `position` int(10) DEFAULT '0',
+  `add_ip` varchar(50) DEFAULT '',
+  `add_by` varchar(100) DEFAULT '',
+  `add_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `update_ip` varchar(50) DEFAULT '',
+  `update_by` varchar(100) DEFAULT '',
+  `update_time` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`news_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/*Data for the table `tbl_news` */
+
+insert  into `tbl_news`(`news_id`,`news_ref`,`news_title`,`news_description`,`news_image`,`image_id`,`external_link`,`start_date`,`end_date`,`display_on_home`,`status`,`position`,`add_ip`,`add_by`,`add_time`,`update_ip`,`update_by`,`update_time`) values 
+(1001,'New Sources','My News','<p>New Contentsss</p>','',0,'','2018-01-18','0000-00-00',0,1,0,'192.168.1.44','admin','2018-01-17 16:38:25','192.168.1.44','admin','2018-01-19 16:19:45'),
+(1002,'No Reference','new','<p>AB Tutorials stands as one of the best law institutes for Law Entrance Exam preparation in India.</p>\n\n<ul>\n	<li>1 out of 3 students qualified NLU\'s in 2017/ 1 out 2 students qualified 3 year DU law exam 2017</li>\n	<li>98% overall success rate for 2 year course students, 95% overall success rate for 1 year course student</li>\n	<li>Over 3000 students qualified in NLU\'s till date</li>\n	<li>Personal attention to each student</li>\n	<li>Small batch size (25 - 35)</li>\n	<li>Since 1994 specialising soley fin Law exam preparation</li>\n	<li>Recording of lectures and online internet lecture facility available</li>\n	<li>Personal post results counselling &amp; guidance for parent and students for law college selection</li>\n	<li>35 Full length online CLAT Format and for AILET, IP and SET</li>\n	<li>216 Ability Tests (96 GK, 48 Logic, 48 Verbal and 24 Legal) / Total of 9240 MCQ\'s online</li>\n	<li>Over 1500 Pages of study material of GK and Current Affairs</li>\n	<li>Over 1000 Pages of study materia','1002-new.jpg',1,'','0000-00-00','0000-00-00',0,2,0,'192.168.1.44','admin','2018-01-17 16:49:04','192.168.1.12','admin','2018-01-18 17:52:49'),
+(1003,'The Hindu','When leaders fly kites, go on a drive: Modi, Netanyahu in Ahmedabad','<p>Prime Minister Narendra Modi on Wednesday played host to his Israeli counterpart, Benjamin Netanyahu, in his home State of Gujarat. The visiting dignitary lavishly praised Mr. Modi, calling him â€œa leader with visionâ€ while heralding the beginning of a new era in India-<a href=\"http://www.thehindu.com/tag/333-244/israel/?utm=bodytag\"><strong>Israel&nbsp;</strong></a>relations and partnership.</p>\n\n<p>Mr. Modi and Mr. Netanyahu and his wife, Sara, went on an 8-km roadshow from the&nbsp;<a href=\"http://www.thehindu.com/tag/122-121-81/ahmedabad/?utm=bodytag\"><strong>Ahmedabad&nbsp;</strong></a>airport to Sabarmati Ashram. Thousands of spectators danced, clapped and waved as the motorcade drove past.</p>\n\n<p>Dozens of two-storey-high posters with the smiling faces of both Prime Ministers were seen along the convoy route, as they drove together in an open vehicle, while artistes and schoolchildren performed dance shows in dozens of stands set up on the way.</p>\n\n<p>Mr. Modi took the couple to the ashram where they paid tributes to Mahatma Gandhi and subsequently, flew kites standing on the Sabarmati riverfront.</p>\n\n<p>Next, they flew off to Deo Dholera village to inaugurate the campus of iCreate, a new incubation and entrepreneurship centre to promote innovation.</p>\n\n<p>Chanting Jai Hind, Jai Bharat and Jai Israel, Mr. Netanyahu expressed willingness to join Indian entrepreneurs for inclusive development.</p>\n\n<p>â€œI am delighted to be here. The world knows about iPads and iPods. There is one more â€˜iâ€™ that the world needs to know about, that is iCreate. Israel wants to build partnership with you. We are your partners and I want Israeli youth to come to India,â€ he said, addressing a gathering of some 1,500 people comprising industrialists, entrepreneurs and businessmen.</p>\n\n<p>â€œPM Modi and I are both very young and both very optimistic. We are young in our thinking and optimistic about the future of our countries,â€ Mr. Netanyahu added.</p>\n\n<p>Mr. Modi underlined the importance of innovations, creativity and technology and Israelâ€™s contribution.</p>\n\n<p>â€œIsrael has proved to the world that commitment of the people, not size of the nation takes the country forward. In India, we are working towards making the entire system innovation-friendly, so that ideas are formed from intent, innovations are formed from ideas &amp; New India is formed from innovations.â€</p>\n\n<p><strong>Water on tap</strong></p>\n\n<p>The two Prime Ministers also witnessed the demonstration of a vehicle that is equipped to conduct desalination of seawater. Designed with a modified jeep, the vehicle costs approximately $111,000. Mr. Modi said the vehicle would be stationed in the Banaskantha border district where the BSF and villagers can both benefit from it.</p>\n\n<p>After inaugurating the innovation centre, both PMs flew down to Vadrad in Sabarkantha district to visit the Centre of Excellence (CoE) for vegetables set up with the help of the Israel Foreign Ministry.</p>','1003-bike.png',1,'www.thehindu.com/news/national/other-states/when-leaders-fly-kites-go-on-a-drive-modi-netanya','2018-01-19','2018-01-20',0,1,0,'192.168.1.44','admin','2018-01-18 11:22:51','192.168.1.87','admin','2018-01-24 11:54:02'),
+(1004,'EDU Times','AB Live launched : Recorded video lectures for students preparing from home or outside delhi','<p>The feat I have achieved this year by clearing the major law entrance exams with good ranks would not have been possible without the constant support and guidance by a few. A part of my success is surely due to AB Tutorials where I did a month long crash course. A major plus point for the institute is the comprehensive material and question banks which are in line with the exam pattern to a large extent.</p>\n\n<p><br />\nAnother advantage is the guidance by Gaurav Sir who was personally involved with our batch at each step. I believe the institute is disciplined, dedicated and determined in making their students succeed. We are a value-driven organization. Our core values inspire us to push our boundaries and set benchmarks for others. They are not just values, they are our growth pillars, the way we do our business. we work with honesty and transparency. We believe that a culture of trust lies at the foundation of any great organization, and this culture is a part of our DNA. For us our people are our most precious asset.</p>','1004-ab-live-launched-recorded-video-lectures-for-students-preparing-from-home-or-outside-delhi.jpg',1,'www.google.com','2017-12-03','0000-00-00',0,1,0,'192.168.1.12','admin','2018-01-18 12:01:40','192.168.1.44','admin','2018-01-20 18:12:17'),
+(1005,'','Fresh batches commence in November for DU law faculty Exam preparation','<p>&nbsp;AB Education Group is an organization specialising in knowledge and research based education training programs for various academic, educational and industry platforms and interfaces. Founded in 1994 it has steadily and progressively grown to become one of the country\'s most reputed organisations for knowledge enhancement methods, education management, learning, training, guidance counseling and aptitude testing services.</p>\n\n<p>AB Education group amongst various companies working in area of education management primarliy consists of AB Tutorials pvt ltd and AB Education and Research Development (ABERD).</p>\n\n<p>Formed in 1994 AB Tutorials is a pioneer in the country in the field of legal education and training and is one of country\'s foremost training institutes for Law Entrance examinations having successfully qualified over 2000 students in top law Colleges and universities till date.&nbsp;</p>\n\n<p>Believing that the most important resource of the country is the human resource and developing it is the single most important pre-requisite to a developed responsible society and a prosperous country.&nbsp;</p>\n\n<p>It develops product solutions and models for applications for various diverse industries . Whether it is Aviation, shipping, hospitality engineering, infrastructure, power, petroleum or energy sectors, ABERD develops specific sector based aptitude testing product solutions to assess and test aptitude of individual/s and provide profiling for corporate and other organizations for suitability and reliability of individuals in the particular sector. It also caters to organizations and companies for routine aptitude testing of their employees at all levels for pre-selection or pre-elevation.</p>','',0,'','2017-10-24','2017-11-30',0,1,0,'192.168.1.12','admin','2018-01-18 13:04:08','192.168.1.87','admin','2018-01-19 16:21:00'),
+(1006,'','ABLTT 1 Year and ABLTS 2 year batches commence. Registrations open','<p>1</p>','',0,'www.abltt.com','2018-01-19','0000-00-00',0,1,0,'192.168.1.12','admin','2018-01-19 12:06:05','192.168.1.44','admin','2018-01-19 18:06:57'),
+(1007,'','New Testing','<p>Content</p>','',0,'','2018-01-26','0000-00-00',0,2,0,'192.168.1.44','admin','2018-01-19 17:25:13','192.168.1.44','admin','2018-01-19 17:26:40');
+
+/*Table structure for table `tbl_site_page` */
+
+DROP TABLE IF EXISTS `tbl_site_page`;
+
+CREATE TABLE `tbl_site_page` (
+  `site_page_id` int(10) NOT NULL DEFAULT '0',
+  `title` varchar(200) DEFAULT '',
+  `url` varchar(150) DEFAULT '',
+  `content` text,
+  `document_file` varchar(500) DEFAULT '',
+  `file_id` tinyint(1) DEFAULT '0',
+  `display_on_home` int(10) DEFAULT '0',
+  `status` tinyint(1) DEFAULT '1',
+  `position` int(10) DEFAULT '0',
+  `add_ip` varchar(50) DEFAULT '000.000.000',
+  `add_by` varchar(100) DEFAULT '',
+  `add_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `update_ip` varchar(50) DEFAULT '000.000.000',
+  `update_by` varchar(100) DEFAULT '',
+  `update_time` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`site_page_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `tbl_site_page` */
+
+insert  into `tbl_site_page`(`site_page_id`,`title`,`url`,`content`,`document_file`,`file_id`,`display_on_home`,`status`,`position`,`add_ip`,`add_by`,`add_time`,`update_ip`,`update_by`,`update_time`) values 
+(1001,'Student Scores','','','1001-student-scores.pdf',1,0,1,0,'192.168.1.87','admin','2018-01-17 12:10:39','192.168.1.87','admin','2018-01-24 12:41:37'),
+(1002,'Exams date','','<p><strong>CLAT 2018 Application Form&nbsp;</strong>has been released from<strong>&nbsp;1st January 2018</strong>. Common Law Admission Test (CLAT) is one of the popular law entrance exams conducted by 18 National Law Universities (NLUs) rotationally. It is the all India level law common entrance exam for the students seeking admission in integrated LL.B. and LL.M. programme. CLAT 2018 exam will be organized by the National University of Advanced Legal Studies. CLAT Scores are considered by various private law colleges and government undertaking colleges across the country. Candidates can get here the detailed information about CLAT 2018 starting from application procedure to admission procedure.</p>','',0,0,1,0,'192.168.1.87','admin','2018-01-17 12:18:16','192.168.1.87','admin','2018-01-22 10:40:29'),
+(1003,'Why Us','www.abtutorial.com/why-us.html','','',0,0,1,0,'192.168.1.87','admin','2018-01-17 15:03:24','192.168.1.87','admin','2018-01-22 10:37:09'),
+(1005,'Programs','www.our-program.html','','',0,0,1,0,'192.168.1.87','admin','2018-01-17 18:09:39','192.168.1.44','admin','2018-01-19 18:28:22'),
+(1006,'Question tests','','','1006-question-tests.pdf',1,0,1,0,'192.168.1.87','admin','2018-01-18 11:17:55','192.168.1.44','admin','2018-01-19 16:20:25'),
+(1009,'Triangle','','','1009-triangle.pdf',1,0,0,0,'192.168.1.12','admin','2018-01-18 18:17:10','192.168.1.87','admin','2018-01-22 12:29:33'),
+(1010,'Sample Paper','','','1010-sample-paper.pdf',1,0,1,0,'192.168.1.87','admin','2018-01-19 18:14:52','192.168.1.87','admin','2018-01-22 10:34:44'),
+(1011,'data','','','1011-data.jpg',1,0,1,0,'192.168.1.87','admin','2018-01-22 15:21:00','192.168.1.87','admin','2018-01-24 18:28:07');
+
+/*Table structure for table `tbl_sitesetting` */
+
+DROP TABLE IF EXISTS `tbl_sitesetting`;
+
+CREATE TABLE `tbl_sitesetting` (
+  `id` int(4) NOT NULL AUTO_INCREMENT,
+  `company_name` varchar(250) NOT NULL,
+  `company_prefix` varchar(5) DEFAULT NULL,
+  `company_domain` varchar(200) NOT NULL,
+  `smtp` varchar(100) NOT NULL,
+  `auth_email` varchar(100) NOT NULL,
+  `auth_email_username` varchar(50) NOT NULL,
+  `auth_email_password` varchar(50) NOT NULL,
+  `info_email` varchar(200) DEFAULT NULL,
+  `cc_email` varchar(200) DEFAULT NULL,
+  `bcc_email` varchar(200) DEFAULT NULL,
+  `company_address` varchar(500) DEFAULT NULL,
+  `company_phone` varchar(50) DEFAULT NULL,
+  `company_fax` varchar(50) DEFAULT NULL,
+  `company_website` varchar(200) DEFAULT NULL,
+  `state_code` varchar(10) DEFAULT NULL,
+  `state_name` varchar(100) DEFAULT NULL,
+  `gstin_no` varchar(20) DEFAULT NULL,
+  `cin_no` varchar(50) DEFAULT NULL,
+  `sac_no` varchar(50) DEFAULT NULL,
+  `pan_no` varchar(50) DEFAULT NULL,
+  `invoice_header` text,
+  `invoice_footer` text,
+  `url_rewrite` tinyint(1) DEFAULT '1',
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1002 DEFAULT CHARSET=latin1;
+
+/*Data for the table `tbl_sitesetting` */
+
+insert  into `tbl_sitesetting`(`id`,`company_name`,`company_prefix`,`company_domain`,`smtp`,`auth_email`,`auth_email_username`,`auth_email_password`,`info_email`,`cc_email`,`bcc_email`,`company_address`,`company_phone`,`company_fax`,`company_website`,`state_code`,`state_name`,`gstin_no`,`cin_no`,`sac_no`,`pan_no`,`invoice_header`,`invoice_footer`,`url_rewrite`,`status`) values 
+(1001,'AB Tutorials','AB','http://abtutorial.com','mail.iws.in','nawal@iws.in','nawal@iws.in','Newpass@890','nawal@iws.in','nawal@iws.in','','','','','','07','Delhi','','','','','','',1,1);
+
+/*Table structure for table `tbl_testimonial` */
+
+DROP TABLE IF EXISTS `tbl_testimonial`;
+
+CREATE TABLE `tbl_testimonial` (
+  `testimonial_id` int(10) NOT NULL DEFAULT '0',
+  `testimonial_ref` varchar(150) DEFAULT '',
+  `testimonial_title` varchar(250) DEFAULT '',
+  `testimonial_description` text,
+  `testimonial_image` varchar(500) DEFAULT '',
+  `image_id` tinyint(1) DEFAULT '0',
+  `display_on_home` int(10) DEFAULT '0',
+  `status` tinyint(1) DEFAULT '1',
+  `position` int(10) DEFAULT '0',
+  `add_ip` varchar(50) DEFAULT '',
+  `add_by` varchar(100) DEFAULT '',
+  `add_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `update_ip` varchar(50) DEFAULT '',
+  `update_by` varchar(100) DEFAULT '',
+  `update_time` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`testimonial_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/*Data for the table `tbl_testimonial` */
+
+insert  into `tbl_testimonial`(`testimonial_id`,`testimonial_ref`,`testimonial_title`,`testimonial_description`,`testimonial_image`,`image_id`,`display_on_home`,`status`,`position`,`add_ip`,`add_by`,`add_time`,`update_ip`,`update_by`,`update_time`) values 
+(1003,'Saloni Ambastha','AIR 2 IP 2017, AIR 88 AILET 2017','<p>AB Tutorials is the best choice if you want to succeed in the law entrances. I joined the 1 year course and got an AIR 88 in AILET and a score of 126.75 in CLAT. It is super personalised and caters to everyone\'s individual requirements, and doesn\'t focus only on getting a few students in the top ranks unlike most other law prep centers. Gaurav Sir\'s mentorship is a rare privilege you must allow yourself to experience.</p>','1003-name.jpg',1,0,1,0,'192.168.1.44','admin','2018-01-16 12:14:14','192.168.1.87','admin','2018-01-24 11:48:13'),
+(1004,'AIR 64 AILET 2017, AIR 93 CLAT 2017','Atulya Gupta','<p>HELLLOOOOOOO</p>','',0,0,2,0,'192.168.1.44','admin','2018-01-16 12:26:14','192.168.1.44','admin','2018-01-17 10:31:38'),
+(1005,'Sachi Agarwal','AIR 38 AILET 2017, AIR 146 CLAT 2018','<p>AB Tutorials really helped give my CLAT and AILET preparation a direction and was there every step of the way right from teaching and clearing doubts to resolving queries regarding test forms.</p>','1005-sachi-agarwal.jpg',1,0,1,0,'192.168.1.44','admin','2018-01-16 12:28:22','192.168.1.44','admin','2018-01-24 17:33:52'),
+(1006,'Prateek Singh Kunduss','LSAT India 3 Years 99.55%','<p>The materials and resources offered by AB tutorials are really useful. Current affairs are detailed and extensive. The faculty for mathâ€™s, logic and legal aptitude is&nbsp;excellentand has been particularly helpful.</p>','1006-prateek-singh-kundu.png',1,0,0,0,'192.168.1.44','admin','2018-01-16 12:29:27','192.168.1.87','admin','2018-01-24 10:50:04'),
+(1007,'Indian Cricketer','Mahendar Singh Dhoni','<p>Bio</p>','',0,0,2,0,'192.168.1.44','admin','2018-01-16 18:34:40','192.168.1.12','admin','2018-01-18 11:15:28'),
+(1008,'Sandeep Tripathi','AIR 64 AILET 2017, AIR 93 CLAT 2017','<p>The feat I have achieved this year by clearing the major law entrance exams with good ranks would not have been possible without the constant support and guidance by a few. A part of my success is surely due to AB Tutorials where I did a month long crash course. A major plus point for the institute is the comprehensive material and question banks which are in line with the exam pattern to a large extent. &nbsp;</p>\n\n<p>Another advantage is the guidance by Gaurav Sir who was personally involved with our batch at each step. I believe the institute is disciplined, dedicated and determined in making their students succeed.</p>','1008-maxresdefault.jpg',1,0,1,0,'192.168.1.12','admin','2018-01-18 11:20:22','192.168.1.87','admin','2018-01-24 18:27:02'),
+(1009,'Test','Test','<p>Data</p>','',0,0,2,0,'192.168.1.87','admin','2018-01-19 16:24:49','192.168.1.87','admin','2018-01-19 16:25:17');
+
+/*Table structure for table `tbl_top_navigation` */
+
+DROP TABLE IF EXISTS `tbl_top_navigation`;
+
+CREATE TABLE `tbl_top_navigation` (
+  `top_nav_id` int(10) NOT NULL DEFAULT '0',
+  `title` varchar(200) DEFAULT '',
+  `url` varchar(150) DEFAULT '',
+  `content` text,
+  `document_file` varchar(500) DEFAULT '',
+  `file_id` tinyint(1) DEFAULT '0',
+  `display_on_home` int(10) DEFAULT '0',
+  `status` tinyint(1) DEFAULT '1',
+  `position` int(10) DEFAULT '0',
+  `add_ip` varchar(50) DEFAULT '000.000.000',
+  `add_by` varchar(100) DEFAULT '',
+  `add_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `update_ip` varchar(50) DEFAULT '000.000.000',
+  `update_by` varchar(100) DEFAULT '',
+  `update_time` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`top_nav_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `tbl_top_navigation` */
+
+insert  into `tbl_top_navigation`(`top_nav_id`,`title`,`url`,`content`,`document_file`,`file_id`,`display_on_home`,`status`,`position`,`add_ip`,`add_by`,`add_time`,`update_ip`,`update_by`,`update_time`) values 
+(1001,'Programs','','<p>Prime Minister Narendra Modi on Wednesday played host to his Israeli counterpart, Benjamin Netanyahu, in his home State of Gujarat. The visiting dignitary lavishly praised Mr. Modi, calling him â€œa leader with visionâ€ while heralding the beginning of a new era in India-<a href=\"http://www.thehindu.com/tag/333-244/israel/?utm=bodytag\"><strong>Israel&nbsp;</strong></a>relations and partnership.</p>\n\n<p>Mr. Modi and Mr. Netanyahu and his wife, Sara, went on an 8-km roadshow from the&nbsp;<a href=\"http://www.thehindu.com/tag/122-121-81/ahmedabad/?utm=bodytag\"><strong>Ahmedabad&nbsp;</strong></a>airport to Sabarmati Ashram. Thousands of spectators danced, clapped and waved as the motorcade drove past.</p>\n\n<p>Dozens of two-storey-high posters with the smiling faces of both Prime Ministers were seen along the convoy route, as they drove together in an open vehicle, while artistes and schoolchildren performed dance shows in dozens of stands set up on the way.</p>\n\n<p>Mr. Modi took the couple to the ashram where they paid tributes to Mahatma Gandhi and subsequently, flew kites standing on the Sabarmati riverfront.</p>\n\n<p>Next, they flew off to Deo Dholera village to inaugurate the campus of iCreate, a new incubation and entrepreneurship centre to promote innovation.</p>\n\n<p>Chanting Jai Hind, Jai Bharat and Jai Israel, Mr. Netanyahu expressed willingness to join Indian entrepreneurs for inclusive development.</p>\n\n<p>â€œI am delighted to be here. The world knows about iPads and iPods. There is one more â€˜iâ€™ that the world needs to know about, that is iCreate. Israel wants to build partnership with you. We are your partners and I want Israeli youth to come to India,â€ he said, addressing a gathering of some 1,500 people comprising industrialists, entrepreneurs and businessmen.</p>\n\n<p>â€œPM Modi and I are both very young and both very optimistic. We are young in our thinking and optimistic about the future of our countries,â€ Mr. Netanyahu added.</p>\n\n<p>Mr. Modi underlined the importance of innovations, creativity and technology and Israelâ€™s contribution.</p>\n\n<p>â€œIsrael has proved to the world that commitment of the people, not size of the nation takes the country forward. In India, we are working towards making the entire system innovation-friendly, so that ideas are formed from intent, innovations are formed from ideas &amp; New India is formed from innovations.â€</p>\n\n<p><strong>Water on tap</strong></p>\n\n<p>The two Prime Ministers also witnessed the demonstration of a vehicle that is equipped to conduct desalination of seawater. Designed with a modified jeep, the vehicle costs approximately $111,000. Mr. Modi said the vehicle would be stationed in the Banaskantha border district where the BSF and villagers can both benefit from it.</p>\n\n<p>After inaugurating the innovation centre, both PMs flew down to Vadrad in Sabarkantha district to visit the Centre of Excellence (CoE) for vegetables set up with the help of the Israel Foreign Ministry.</p>','',0,0,0,0,'192.168.1.87','admin','2018-01-19 10:34:50','192.168.1.44','admin','2018-01-19 16:20:37'),
+(1002,'Law Exam','','','1002-law-exam.pdf',1,0,1,0,'192.168.1.87','admin','2018-01-19 10:37:57','192.168.1.87','admin','2018-01-22 12:42:32'),
+(1003,'Study Material','','','1003-study-material.pdf',1,0,1,0,'192.168.1.87','admin','2018-01-19 10:38:51','192.168.1.87','admin','2018-01-22 12:21:25'),
+(1004,'About us','www.abtutorials.com/about.php','','',0,0,1,0,'192.168.1.87','admin','2018-01-19 11:21:31','192.168.1.44','admin','2018-01-19 18:31:46'),
+(1005,'test codeggniter','','','1005-test-codeggniter.xls',1,0,2,0,'192.168.1.87','admin','2018-01-19 18:20:01','192.168.1.87','admin','2018-01-19 18:20:09'),
+(1006,'Contact Us','www.abtutorial.com/contact-us.html','','',0,0,1,0,'192.168.1.87','admin','2018-01-20 10:18:21','192.168.1.87','admin','2018-01-22 10:34:13'),
+(1007,'Exam Pattern','','','1007-exam-pattern.jpg',1,0,1,0,'192.168.1.87','admin','2018-01-22 12:26:54','192.168.1.87','admin','2018-01-23 12:11:09'),
+(1008,'data.data','','','1008-data-data.pdf',1,0,1,0,'192.168.1.87','admin','2018-01-22 12:55:55','192.168.1.87','admin','2018-01-22 17:56:26');
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
