@@ -1,0 +1,306 @@
+///////////////writeup.php
+<?php 
+error_reporting(0);
+include("header.php");
+
+define("PAGE_AJAX","ajax_writeup.php"); 
+
+?>
+
+<div ng-show="fullPageLoader" class="loadDiv" style="left: 0; z-index: 9999; position:absolute; text-align:center; top:50%; height:200px; width:100%;">
+    <i class="fa fa-spinner fa-spin fa-3x fa-fw" aria-hidden="true"></i>
+</div>
+
+<div ng-view></div>
+ 
+<script type = "text/ng-template" id="addWriteUp">
+   
+   <?php include("user_addTemplate.php");?>
+</script>
+
+<script type = "text/ng-template" id="listWriteUp">
+   
+   <?php include("user_listTemplate.php");?>
+</script>
+ 
+
+<script>
+(function(){
+ angular.module("iwsApp").config(['$routeProvider', function($routeProvider) {
+        $routeProvider.
+            when('/addWriteUp', {templateUrl: 'addWriteUp',controller: 'addController'}).
+            when('/addWriteUp/:content_id', {templateUrl: 'addWriteUp',controller: 'addController'}).
+             when('/listWriteUp', {templateUrl: 'listWriteUp',controller: 'listController'}).
+            when('/listWriteUp/:page', {templateUrl: 'listWriteUp',controller: 'listController'}).
+            otherwise({redirectTo: '/listWriteUp'});
+     }]);
+
+
+    angular.module('iwsApp').factory('dataFactoryName',['$http', 'myConfig', '$location', '$routeParams','Upload', function($http, myConfig, $location, $routeParams,Upload) {
+        var factory = {};
+       factory.getDetailFactory = function() {
+            
+                var objData = {};
+                objData.type = 'list_data';
+                //console.log(objData);
+                return $http({method: 'POST', url: '<?php echo PAGE_AJAX;?>', data:objData});
+            
+        };
+        return factory;
+    }]);
+
+
+    angular.module('iwsApp').controller('addController', ['$scope', '$http', '$httpParamSerializer', '$location', '$routeParams', 'myConfig', '$timeout', '$filter','$window','$q','dataFactoryName', 'Upload', function($scope, $http, $httpParamSerializer, $location, $routeParams, myConfig, $timeout, $filter,$window,$q,dataFactoryName, Upload){
+        $window.scrollTo(0, 0);
+        $scope.submitProcess = 0;
+        $scope.submitProcessMsg = '';
+        $scope.fullPageLoader = 0;
+        $scope.dataFrm = {};
+        $scope.hTitle="Add";
+        $scope.input_selection=1;
+
+          $scope.options = {
+            
+            language: 'en',
+            allowedContent: true,
+            entities: false,
+            filebrowserBrowseUrl : 'ckfinder/ckfinder.html',
+            filebrowserImageBrowseUrl : 'ckfinder/ckfinder.html?type=Images',
+            filebrowserFlashBrowseUrl : 'ckfinder/ckfinder.html?type=Flash',
+            filebrowserUploadUrl : 'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+            filebrowserImageUploadUrl : 'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+            filebrowserFlashUploadUrl : 'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash' 
+        };
+
+
+        
+           
+            
+            $scope.content_id = $routeParams.content_id;
+            
+            var promise = dataFactoryName.getDetailFactory($routeParams.content_id);
+
+            promise.then(
+                function(payload) {
+                    if(parseInt(payload.data.data.length) > parseInt(0))
+                    {
+                        $scope.dataFrm.content_id=payload.data.data[0].content_id;
+                        if(payload.data.data[0].title !='')
+                        {
+                        $scope.dataFrm.title = payload.data.data[0].title.replace(/\\/g,'');
+                        }
+
+                        if(payload.data.data[0].description !='')
+                        {
+                        
+                        $scope.dataFrm.content = payload.data.data[0].description.replace(/\\/g,'');
+                        }
+
+                        $timeout(function(){
+                            $scope.fullPageLoader = 0;
+                        }, 10000);
+                    }
+                    else
+                    {
+                        location.href = "index.php";
+                    }
+                },
+                function(errorPayload) {
+                    console.log('failure loading', errorPayload);
+                }
+            );
+
+        
+
+
+///////////Save Data Function============================        
+        $scope.submit=function()
+        {
+            $scope.submitProcess = 1;
+            $scope.dataFrm.type="saveData";
+            //console.log($scope.dataFrm); return false;
+            $http({method:'POST',url:'<?php echo PAGE_AJAX; ?>',data:$scope.dataFrm}).success(function(response){
+            $scope.submitProcess = 2;
+            $scope.submitProcessMsg = response.MSG;
+            $timeout(function(){
+                $scope.submitProcess = 0;
+                if (response.SUCCESS == '1') {
+                    $scope.dataFrm={};
+                    $location.url("/listWriteUp");
+                } 
+            }, 3000);
+            })
+        }
+          
+    }]);
+
+    
+     
+})();	
+</script>
+      
+
+<?php
+include("footer.php");
+?>
+///////end write up
+
+//ajax_writeup
+<?php
+session_start();
+error_reporting(0);
+include("config-cms.php");
+
+$REQDataRaw = file_get_contents("php://input");
+$REQData = json_decode($REQDataRaw);
+//$REQ = $REQData->call;
+
+$type =  trustme($REQData->type);
+$type;
+
+switch($type)
+{	
+		case "saveData":
+			saveData();
+				break;
+		case "list_data":
+			list_data();
+			break;
+}
+
+
+function saveData()
+{
+	global $dCON,$REQData;
+
+	$IP = $_SERVER['REMOTE_ADDR'];
+	$TIME = date("Y-m-d H:i:s");
+
+	$title = trustme($REQData->title);
+	$content = trustyou($REQData->content);
+	$content_id = intval($REQData->content_id);
+	if(intval($content_id) == intval(0))
+	{
+
+	$MAXID = getMaxId(WRITEUP_TBL,"content_id");
+
+	$SQL ="";
+	$SQL .= " INSERT INTO " . WRITEUP_TBL . " SET ";
+	$SQL .= " content_id=:content_id, ";
+	$SQL .= " title=:title, ";
+	$SQL .= " description=:description, ";
+	$SQL .= " add_ip=:add_ip, ";
+	$SQL .= " add_by=:add_by, ";
+	$SQL .= " add_time=:add_time ";
+
+	$stmt = $dCON->prepare($SQL);
+	$stmt->bindParam(":content_id",$MAXID);
+	$stmt->bindParam(":title",$title);
+	$stmt->bindParam(":description",$content);
+	$stmt->bindParam(":add_ip",$IP);
+	$stmt->bindParam(":add_by",$_SESSION['USERNAME']);
+	$stmt->bindParam(":add_time",$TIME);
+
+	$rs = $stmt->execute();
+	$stmt->closeCursor();
+	}
+	else if(intval($content_id) > intval(0) )
+	{
+
+	$SQL ="";
+	$SQL .= "UPDATE " . WRITEUP_TBL " SET ";
+	$SQL .= " title=:title, ";
+	$SQL .= " description=:description, " ;
+	$SQL .= " update_ip=:update_ip, ";
+	$SQL .= " update_by=:update_by, ";
+	$SQL .= " update_time=:update_time ";
+	$SQL .= " WHERE content_id=:content_id ";
+
+	$stmt = $dCON->prepare($SQL);
+	$stmt->bindParam(":title",$title);
+	$stmt->bindParam(":description",$content);
+	$stmt->bindParam(":update_ip",$IP);
+	$stmt->bindParam(":update_by",$_SESSION['USERNAME']);
+	$stmt->bindParam(":update_time",$TIME);
+	$stmt->bindParam(":content_id",$content_id);
+
+	$rs = $stmt->execute();
+	$stmt->closeCursor();
+
+
+	}
+	else
+	{
+		$rs =2;
+	}
+
+	$RETURN_ARRAY = array();
+		 switch($rs)
+		{
+			case "1":
+					$RETURN_ARRAY['SUCCESS'] = 1;
+					$RETURN_ARRAY['MSG'] = "&#x2714; Successfully saved.";
+					break;
+			case "2":
+					
+					$RETURN_ARRAY['SUCCESS'] = 2;
+					$RETURN_ARRAY['MSG'] = "&#x2757; Already Exists.";
+					break; 
+			default:
+					$RETURN_ARRAY['SUCCESS'] = 0;
+					$RETURN_ARRAY['MSG'] = "&#x2718; Sorry cannot process your request.";
+					break;
+		}
+
+	echo json_encode($RETURN_ARRAY);
+}
+
+
+function list_data()
+{  
+    global $dCON, $REQData;
+    
+    $RETURN_ARRAY = array();
+    $RETURN_ARRAY['searchedFields'] = array();
+    
+
+
+    $SQL = "";
+    $SQL .= " SELECT B.content_id,B.title,B.description,B.status";
+    $SQL .= " FROM " . WRITEUP_TBL . " AS B ";
+    $SQL .= " WHERE B.status <> '2' ";
+    //$SQL .= " ORDER BY top_nav_id desc ";
+    //echo $SQL;
+/*    
+    $SQL_COUNT  = "";
+    $SQL_COUNT .= " SELECT COUNT(*) AS CT FROM ( ";
+    $SQL_COUNT .= $SQL;
+    $SQL_COUNT .= " ) as aa ";
+    
+    
+    $stmtCnt =  $dCON->prepare($SQL_COUNT);
+    $stmtCnt->execute($searchArr);
+    $noOfRecords_row = $stmtCnt->fetchObject();
+    $stmtCnt->closeCursor();
+    $noOfRecords = intval($noOfRecords_row->CT);
+
+    $rowsPerPage = 25;
+
+    $page = intval($page) - 1;
+    $offset = $rowsPerPage * $page ;
+
+    $SQL .= " LIMIT " . $offset . "," . $rowsPerPage;*/
+
+    $stmt = $dCON->prepare($SQL);
+    $stmt->execute($searchArr);
+    $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
+    
+    $RETURN_ARRAY['data'] = $row;
+    //$RETURN_ARRAY['total_records'] = $noOfRecords;
+    
+    echo json_encode($RETURN_ARRAY);    
+          
+}
+?>
+//end ajaxwriteup
