@@ -1,0 +1,19 @@
+
+//for displaying number like 001,002,003..... you can use following function
+$value_for_display = str_pad($value_from_db,3,'0',STR_PAD_LEFT); //or you can use STR_PAD_RIGHT
+echo $value_for_display;
+
+//for displaying number like 001,002... by your sql query................
+$sql = "select lpad(field_name,3,0) from tbl_name ";
+
+
+//for getting second highest salary in mysql
+$sql = "select max(value) from tbl_name where value NOT IN (select max(value) from tbl_name) ";
+////////////////////-------------------OR--------------------------////////////////////////
+$sql ="select max(value) from tbl_name where value < (select max(value) from tbl_name) ";
+//////////////////////////////////////////////////////////////////////////////////////////
+
+//For  getting third highest value from db in sql query////////////////////////////////
+$sql="select max(value) from tbl_name where value < (select max(value)-1 from tbl_name)";
+
+/////////////////////////////////////////////////////////////////////////////////////////
