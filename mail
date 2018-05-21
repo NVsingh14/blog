@@ -1,0 +1,79 @@
+ $MAIL_BODY .=  '<head>';
+                   $MAIL_BODY .= '<meta charset="utf-8">';
+                    $MAIL_BODY .= '</head>';
+                     $MAIL_BODY .= '<body>';
+                      $MAIL_BODY .= '<table width="100%" border="0" cellspacing="0" cellpadding="0">';
+                       $MAIL_BODY .= '<tbody>';
+                        $MAIL_BODY .= '<tr>';
+                          $MAIL_BODY .= '<td>';
+                            $MAIL_BODY .= '<table width="600" border="0" cellspacing="0" cellpadding="12" align="center" style="background: #ffffff;border:1px solid #ccc; font-family: \'Helvetica Neue\', Helvetica, Arial, \'sans-serif\';">';
+                             $MAIL_BODY .=  '<tbody>';
+                               $MAIL_BODY .=  '<tr>';
+                                  $MAIL_BODY .= '<td align="center" bgcolor="#1a142e" style="padding: 10px 0 5px;"><table width="100%" align="center" style="margin: 0 auto;text-align: center;"><tr><td><img src="' . SITE_URL . 'images-kundliwala/logo.png" width="75" alt="Kundliwala"></td></tr><tr><td style="color: #ffffff; text-align: center; font-size: 16px; font-weight: 700;">'.$header_msg.' </td></tr></table></td>';
+                               $MAIL_BODY .=  '</tr>';
+                            $MAIL_BODY .= '<tr>';
+                            $MAIL_BODY .= '</tr>';
+                                $MAIL_BODY .= '<tr>';
+                                 $MAIL_BODY .= '<td style="padding: 20px 20px 0px 20px; font-size: 14px; color: #333333; line-height: 20px; border-right: 0px solid #849f92; border-bottom: 0px solid #08509e;">';
+                                   $MAIL_BODY .= "<b>Dear Admin</b>, <br /><br />";
+                                   $MAIL_BODY .= "New Contact us request has been received from website. Details are given below: <br />";
+                                   $MAIL_BODY .= '<table style="width: 100%;">';
+                               $MAIL_BODY .= '<tr>';
+                               $MAIL_BODY .= '<td colspan="2" style="padding:0px;">';
+                               $MAIL_BODY .= "<b style='color: #ffffff;font-size: 14px;'>&nbsp;</b>";
+                               $MAIL_BODY .= '</td>';
+                               $MAIL_BODY .= '</tr>';
+                               $MAIL_BODY .= '<tr>';
+                               $MAIL_BODY .= '<td style="border-bottom: 1px solid #eee;padding: 5px 0px;width: 25%;">';
+                               $MAIL_BODY .= "<b style='color: #333333;font-size: 14px;'>Name : </b>";
+                               $MAIL_BODY .= '</td>';
+                               $MAIL_BODY .= '<td style="width: 75%;border-bottom: 1px solid #eee;padding: 5px 0px;font-size: 13px;color: #424242;">';
+                               $MAIL_BODY .= $user_full_name;
+                               $MAIL_BODY .= '</td>';
+                               $MAIL_BODY .= '</tr>';
+                               $MAIL_BODY .= '<tr>';
+                               $MAIL_BODY .= '<td style="border-bottom: 1px solid #eee;padding: 5px 0px;">';
+                               $MAIL_BODY .= "<b style='color: #333333;font-size: 14px;'>Email : </b>";
+                               $MAIL_BODY .= '</td>';
+                               $MAIL_BODY .= '<td style="border-bottom: 1px solid #eee;padding: 5px 0px;font-size: 13px;color: #424242;">';
+                               $MAIL_BODY .= $email ;
+                               $MAIL_BODY .= '</td>';
+                               $MAIL_BODY .= '</tr>';
+                               $MAIL_BODY .= '<tr>';
+                               $MAIL_BODY .= '<td style="border-bottom: 1px solid #eee;padding: 5px 0px;">';
+                               $MAIL_BODY .= "<b style='color: #333333;font-size: 14px;'>Phone Number : </b>";
+                               $MAIL_BODY .= '</td>';
+                               $MAIL_BODY .= '<td style="border-bottom: 1px solid #eee;padding: 5px 0px;font-size: 13px;color: #424242;">';
+                               $MAIL_BODY .= $phone;
+                               $MAIL_BODY .= '</td>';
+                               $MAIL_BODY .= '</tr>';
+                               $MAIL_BODY .= '<tr>';
+                               $MAIL_BODY .= '<td style="padding: 5px 0px 15px 0px;">';
+                               $MAIL_BODY .= "<b style='color: #333333;font-size: 14px;'>Query : </b>";
+                               $MAIL_BODY .= '</td>';
+                               $MAIL_BODY .= '<td style="padding: 5px 0px 15px 0px;font-size: 13px;color: #424242;">';
+                               $MAIL_BODY .= $txt_message;
+                               $MAIL_BODY .= '</td>';
+                               $MAIL_BODY .= '</tr>';
+                               $MAIL_BODY .= '</table><br />';   
+                                 $MAIL_BODY .=  '</td>';
+                                $MAIL_BODY .= '</tr>';
+                    
+                                $MAIL_BODY .= '<tr>';
+                                 $MAIL_BODY .=  '<td align="center" bgcolor="#2a2a2f" style="padding: 8px 0; color:#ffffff; font-size: 12px; font-weight: 600; text-transform: uppercase;">Team Kundliwala</td>';
+                               $MAIL_BODY .=  '</tr>';
+                             $MAIL_BODY .= '</tbody>';
+                           $MAIL_BODY .= '</table>';
+                            
+                          $MAIL_BODY .= '</td>';
+                       $MAIL_BODY .= '</tr>';
+                      $MAIL_BODY .= '</tbody>';
+                   $MAIL_BODY .= '</table>';
+        
+                   $MAIL_BODY .=  '</body>';
+                $MAIL_BODY .= '</html>';
+
+
+
+    
+    $success =  MailObject($MAIL_TO,$MAIL_FROM,$MAIL_CC,$MAIL_BCC,$MAIL_SUBJECT,$MAIL_BODY,$MAIL_ATTACHMENT); 
