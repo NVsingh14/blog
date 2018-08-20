@@ -1,0 +1,889 @@
+<?php
+//error_reporting(0);
+//include("ajax_session.php"); 
+
+if (isset($_POST['_chunkNumber'])) {
+     
+    
+    $uid = $_REQUEST['uuid'];
+    $filename = $_REQUEST['filename'];
+    
+    // the file is uploaded piece by piece, chunk mode
+    $current_chunk_number = $_REQUEST['_chunkNumber'];
+    $chunk_size = $_REQUEST['_chunkSize'];
+    $total_size = $_REQUEST['_totalSize'];
+    //echo $_POST['_chunkNumber'] . " ==== $chunk_size === $total_size === $filename === $uid ==== \n " ; 
+    //print_r($_FILES); //['file']['tmp_name'] . " = TEMP NAME \n";
+    //exit();
+    $upload_folder = '../uploads/temp_upload/';
+    $total_chunk_number = ceil($total_size / $chunk_size);
+    move_uploaded_file($_FILES['file']['tmp_name'][0], $upload_folder . $uid . '.part' . $current_chunk_number);
+      
+    // the last chunk of file has been received
+    if ($current_chunk_number == ($total_chunk_number - 1)) {
+        
+        //unlink($upload_folder . $filename);
+        // reassemble the partial pieces to a whole file
+        for ($i = 0; $i < $total_chunk_number; $i ++) {
+            //echo filesize($upload_folder . $uid . '.part' . $i);
+            $content = file_get_contents($upload_folder . $uid . '.part' . $i);
+            file_put_contents($upload_folder . $filename, $content, FILE_APPEND);
+            unlink($upload_folder . $uid . '.part' . $i);
+        }
+         
+        
+        //$returnArr = array( 'SUCCESS' => 1, 'MSG' => 'Unable to upload file. Please try again. 2', "PATH_TO_IMAGE" => $upload_folder . $filename, 'IMAGE_NAME' => '', 'IMAGE_EXTENSION' => '' );
+        
+        ///$returnArr = array( 'SUCCESS' => 1, 'MSG' => 'File upload completed', "PATH_TO_IMAGE" => $upload_folder . $filename, 'IMAGE_NAME' => $filename, 'IMAGE_EXTENSION' => pathinfo($filename, PATHINFO_EXTENSION));
+        $returnArr = array( 'SUCCESS' => 1, 'MSG' => 'File upload completed', "PATH_TO_FILE" => $upload_folder . $filename, 'FILE_NAME' => $filename, 'FILE_EXTENSION' => pathinfo($filename, PATHINFO_EXTENSION));
+        
+        
+        $json = json_encode( $returnArr );
+        echo $json;
+        
+         
+        
+        //unlink($upload_folder . $filename);
+    } 
+}
+
+
+
+
+
+
+
+
+/*
+//include("ajax_session.php");
+//include_once("../library_hall/class.imageresizer.php");
+if ( !empty( $_FILES ) ) {
+    $tempPath = $_FILES[ 'file' ][ 'tmp_name' ];
+    $uploadPath = '../uploads/temp/' . $_FILES[ 'file' ][ 'name' ];
+
+    if(move_uploaded_file( $tempPath, $uploadPath ))
+    {
+        $returnArr = array( 'SUCCESS' => 1, 'MSG' => 'File upload completed', "PATH_TO_IMAGE" => $uploadPath, 'IMAGE_NAME' => $_FILES[ 'file' ][ 'name' ], 'IMAGE_EXTENSION' => pathinfo($_FILES[ 'file' ][ 'name' ], PATHINFO_EXTENSION));
+    }
+    else
+    {
+        $returnArr = array( 'SUCCESS' => 0, 'MSG' => 'Unable to upload file. Please try again.', "PATH_TO_IMAGE" => '', 'IMAGE_NAME' => '', 'IMAGE_EXTENSION' => '' );
+    }
+} else {
+    $returnArr = array( 'SUCCESS' => 3, 'MSG' => 'Unable to upload file. Please try again.', "PATH_TO_IMAGE" => '', 'IMAGE_NAME' => '', 'IMAGE_EXTENSION' => '' );
+}
+
+$json = json_encode( $returnArr );
+echo $json;
+*/
+?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php  
+include("header.php");
+define("PAGE_AJAX","ajax_author.php"); 
+define("PAGE_AJAX_COMMON","ajax_common.php"); 
+
+?>
+<div class="content-wrapper container-fluid bodySection">
+
+     
+    <div ng-show="fullPageLoader" class="loadDiv">
+        <img src="<?php echo SITE_IMAGES;?>load.gif" id="loading-image"/>
+    </div> 
+      
+    
+    <div ng-view></div>
+     
+    <script type = "text/ng-template" id="addAuthor">   
+       <?php include("author_template.php");?>
+    </script>
+     
+    <script type = "text/ng-template" id = "listAuthor">
+        <?php include("author_list_template.php");?>
+    </script>
+</div>
+
+<script>
+(function(){   
+
+ angular.module("cmsApp").config(['$routeProvider','$locationProvider', function($routeProvider,$locationProvider) {
+        
+         
+        $routeProvider. 
+         
+            when('/addAuthor', {
+               templateUrl: 'addAuthor',
+               controller: 'authorAddController'
+            }).
+            
+            when("/addAuthor/:author_id", {
+                templateUrl: 'addAuthor',
+                controller: 'authorAddController'
+            }).
+
+         
+            when('/listAuthor', {
+               templateUrl: 'listAuthor',
+               controller: 'authorListController'
+            }).
+            
+            when('/listAuthor/:page', {
+               templateUrl: 'listAuthor',
+               controller: 'authorListController'
+            }).
+            
+            otherwise({
+               redirectTo: '/listAuthor'
+            });
+            
+            $locationProvider.hashPrefix('');
+            
+     }]);
+     
+     
+     
+     angular.module('cmsApp').factory('authorDetailFactory',['$http', 'myConfig', '$location', '$routeParams', function($http, myConfig, $location, $routeParams) {
+        
+        var factory = {};
+        
+        factory.getDetailFactory = function(author_id) {
+            if(author_id) {
+                
+                // list only 1
+                var objData = {};
+                objData.type = 'getDetail';
+                objData.author_id = author_id;
+                return $http({method: 'POST', url: '<?php echo PAGE_AJAX;?>', data:objData});
+            
+            }else{
+             
+                //alert($location.search().sName);
+                // list all
+                //alert("LIST");
+                var objData = {};
+                
+                objData.sType = $location.search().sType || "";
+                objData.sName = $location.search().sName || "";
+               
+                objData.sEmail = $location.search().sEmail || "";
+                objData.sLogin = $location.search().sLogin || "";
+                
+                objData.sStatus = $location.search().sStatus || "";
+                
+                objData.type = 'listData';
+                objData.page = $routeParams.page;
+    
+                //console.log(objData);
+                return $http({method: 'POST', url: '<?php echo PAGE_AJAX;?>', data:objData});
+                
+            }
+    
+            //return $routeParams.id;
+        };
+    
+    
+    
+        return factory;
+     }]);
+     
+     
+     /////////////////Add //////////////////////////////////////////////////////////////
+     
+     
+     angular.module('cmsApp').controller('authorAddController', ['$scope', '$http', '$httpParamSerializer', '$location', '$routeParams', 'myConfig', '$timeout', '$filter','$window','$q','authorDetailFactory', 'Upload', function($scope, $http, $httpParamSerializer, $location, $routeParams, myConfig, $timeout, $filter,$window,$q,authorDetailFactory, Upload){
+        
+        //alert("AAAAA");
+        //alert($routeParams.author_id)
+          
+        $scope.submitProcess = 0;
+        $scope.submitProcessMsg = '';
+        $scope.fullPageLoader = 0;
+        $scope.successMsg = '';
+        $scope.dataFrm = {};
+        $scope.dataFrm.author_type = 1; // 1 for Author, 2 For Columnist
+        $scope.dataFrm.status = true;
+        $scope.hTitle = 'Add';
+        
+        // Editor options.
+        $scope.options = {
+            toolbar:[
+                ['Bold', 'Italic','Underline','Cut','Copy','Paste','Undo','Redo'], 
+                ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
+                
+            ],
+            language: 'en',
+            allowedContent: true,
+            entities: false,
+            filebrowserBrowseUrl : '../includes/ckfinder/ckfinder.html',
+            filebrowserImageBrowseUrl : '../includes/ckfinder/ckfinder.html?type=Images',
+            filebrowserFlashBrowseUrl : '../includes/ckfinder/ckfinder.html?type=Flash',
+            filebrowserUploadUrl : '../includes/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+            filebrowserImageUploadUrl : '../includes/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+            filebrowserFlashUploadUrl : '../includes/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+            
+        };
+
+        // Called when the editor is completely ready. for ckeditor
+        $scope.onReady = function () {
+            // ...
+            //console.log("ckeditor is ready......");
+        };
+        
+        
+        
+        $scope.dataFrm.AdocumentArray = new Array();
+        
+        if($routeParams.author_id) 
+        {
+            //alert($routeParams.author_id)
+            //$scope.fullPageLoader = 1;
+            $scope.hTitle = 'Modify';
+            
+            var promise = authorDetailFactory.getDetailFactory($routeParams.author_id);
+
+            promise.then(
+                function(payload) {
+                    //console.log(payload);
+                      
+                    if(parseInt(payload.data.data.length) > parseInt(0))
+                    {
+                          
+                        $scope.dataFrm.author_id = payload.data.data[0].author_id;
+                        
+                        $scope.dataFrm.author_type = payload.data.data[0].author_type;
+                        //$scope.dataFrm.username = payload.data.data[0].username;
+                        //$scope.dataFrm.password = payload.data.data[0].password;
+                       
+                        $scope.dataFrm.author_name = payload.data.data[0].author_name;
+                        $scope.dataFrm.author_email = payload.data.data[0].author_email;
+                        $scope.dataFrm.author_mobile = payload.data.data[0].author_mobile;
+                        
+                        if(payload.data.data[0].author_content !='' && payload.data.data[0].author_content != null)
+                        {
+                            $scope.dataFrm.author_content = payload.data.data[0].author_content.replace(/\\/g,'');
+                        }
+                        
+                        
+                        $scope.dataFrm.AdocumentArray = payload.data.data_images;            
+                        //alert(payload.data.data[0].author_image + "=====" + $scope.dataFrm.AdocumentArray.length);
+                         
+                        
+                        $scope.dataFrm.url_key = payload.data.data[0].url_key;
+                        $scope.dataFrm.meta_title = payload.data.data[0].meta_title;
+                        $scope.dataFrm.meta_keyword = payload.data.data[0].meta_keyword;
+                        $scope.dataFrm.meta_description = payload.data.data[0].meta_description;
+                        
+                        $scope.dataFrm.status = payload.data.data[0].status == 0 ? false:true;
+                        
+                        //console.log($scope.dataFrm.meta_title);
+                         
+                        $timeout(function(){
+                            $scope.fullPageLoader = 0;
+                        }, 1000);
+                        
+                    }
+                    else
+                    {
+                        location.href = "index.php";
+                       // $location.path('/welcome');
+                    }
+
+
+                },
+                function(errorPayload) {
+                    console.log('failure loading', errorPayload);
+                }
+
+
+            );
+              
+        }else{
+            
+            $scope.dataFrm.author_id = 0;                        
+            $scope.dataFrm.author_type = "<?php echo $_SESSION["CONSTANT_TYPE_4_AUTHOR"]; ?>";
+            $scope.dataFrm.author_name = "";
+            $scope.dataFrm.author_email = "";
+            $scope.dataFrm.author_mobile = "";
+            $scope.dataFrm.author_content = "";
+            $scope.dataFrm.AdocumentArray = [];
+                         
+            $scope.dataFrm.url_key = "";
+            $scope.dataFrm.meta_title = "";
+            $scope.dataFrm.meta_keyword = "";
+            $scope.dataFrm.meta_description = "";
+            
+            $scope.dataFrm.status = true;
+            
+            
+        }
+        
+        
+        /*
+        $scope.uploadErrMsg = '';          
+        $scope.uploadFilesORG = function(files, errFiles) {
+            
+            //console.log( " File Len: " + files.length);
+             
+            
+            if(files.length > 1) { 
+                $scope.uploadErrMsg = 'Please upload 1 Files At Once'; 
+                $timeout(function(){
+                    $scope.uploadErrMsg = '';
+                }, 2500)
+                return false;
+            }
+            
+            $scope.files = files; 
+            $scope.errFiles = errFiles;
+            
+            angular.forEach(files, function(file) {
+                 
+                //console.log( " File Len: " + file)
+                 
+                file.upload = Upload.upload({
+                    url: 'upload-multiple.php',
+                    data: {file: file}
+                });
+    
+                file.upload.then(function (response) {
+                    $timeout(function () {
+                        file.result = response.data;
+                        
+                        //console.log( " File Result " +  file.result); 
+                        
+                        var objImg = {};
+                        objImg.FILE_NAME = file.result.FILE_NAME;
+                        objImg.PATH_TO_FILE = file.result.PATH_TO_FILE;
+                        
+                        var re = /(?:\.([^.]+))?$/;
+                        objImg.FILE_EXT = re.exec(objImg.FILE_NAME)[1];
+                        
+                        objImg.file_for_client = 0;
+                        
+                        $scope.dataFrm.AdocumentArray = []; // Comment this line if you want this as multiple uploads
+                        
+                        $scope.dataFrm.AdocumentArray.push(objImg);
+                        
+                        file.donot_show = 'YES';
+                         
+                    });
+                }, function (response) {
+                    if (response.status > 0)
+                        $scope.errorMsg = response.status + ': ' + response.data;
+                }, function (evt) {
+                    file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                });
+                
+                
+            });
+            
+            //console.log($scope.dataFrm.AdocumentArray);
+            
+        };
+        */
+        
+        var guid = function() {
+          var s4 = function() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+              .toString(16)
+              .substring(1);
+          }
+          return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+            s4() + '-' + s4() + s4() + s4();
+        } 
+        $scope.uploadErrMsg = '';          
+        $scope.uploadFiles = function (file, errFiles) {
+            
+            //alert("CALL CHUNK UPLOAD");
+            //console.log(file);
+            //console.log(file[0].name);
+            //console.log("\n ====================== \n ");
+            //return false;
+            
+            if(file.length == 0) { 
+                $scope.uploadErrMsg = 'Error while uploading, Size bigger than allowed limit '; 
+                $timeout(function(){
+                    $scope.uploadErrMsg = '';
+                }, 5000)
+                return false;
+            }else if(file.length > 1) { 
+                $scope.uploadErrMsg = 'Please upload 1 Files At Once'; 
+                $timeout(function(){
+                    $scope.uploadErrMsg = '';
+                }, 2500)
+                return false;
+            }else{
+            
+                
+                var uuid = guid(); 
+                Upload.upload({
+                    //url: myConfig.upload_url,
+                    //data: {file: file}
+                    
+                    url: 'chunk-upload.php',
+                    resumeChunkSize: '1MB',
+                    data: {
+                        filename: file[0].name,
+                        file: file,
+                        uuid: uuid 
+                    }
+                    
+                    
+                }).then(function (response) {
+                    
+                    //console.log(response);
+                    
+                    
+                    //console.log('Success ' + resp.data.data.file[0].name + 'uploaded. Response: ' + resp.data);
+                    
+                    file.result = response.data;
+                            
+                    //console.log( " File Name " +  file.result.FILE_NAME); 
+                    
+                    var objImg = {};
+                    objImg.file_id = 0;
+                    objImg.FILE_NAME = file.result.FILE_NAME;
+                    objImg.PATH_TO_FILE = file.result.PATH_TO_FILE;
+                    
+                    var re = /(?:\.([^.]+))?$/;
+                    objImg.FILE_EXT = re.exec(objImg.FILE_NAME)[1];
+                    
+                    //objImg.file_for_client = 0;
+                    //file.donot_show = 'YES';
+                    
+                    $scope.dataFrm.AdocumentArray = []; // Comment this line if you want this as multiple uploads
+                    $scope.dataFrm.AdocumentArray.push(objImg);
+                    
+                    //return false;
+                    
+                    
+                    
+                    /*
+                    return false;
+                    if(resp.data.SUCCESS == "1")
+                    {
+                        $scope.dataFrm.etfs_image = resp.data.IMAGE_NAME;
+                        $scope.dataFrm.etfs_image_disp = resp.data.PATH_TO_IMAGE;
+                        
+                    }else{
+                        $scope.fileuploaderror_etfs_image = resp.data.MSG;
+                    }
+                    */
+                    
+        
+                    //console.log(resp.data.PATH_TO_IMAGE);
+        
+                }, function (response) {
+                    //console.log('Error status: ' + resp.status);
+                    if (response.status > 0)
+                        $scope.errorMsg = response.status + ': ' + response.data;
+                }, function (evt) {
+                    var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                    console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+                    //file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                    $scope.uploadErrMsg = 'progress: ' + progressPercentage + '% ';
+                });
+                
+                 
+                
+            
+            }
+            
+        };
+        
+        
+        
+        $scope.removeImage = function(idx,FROM) {
+            
+            var c = confirm("Are you sure you wish to remove?"); 
+            if(c) {
+                
+                //alert(idx); 
+                
+                var objSendData = {};
+                objSendData.type = "removeImage";
+                objSendData.id = $routeParams.author_id;
+                //alert(FROM);      
+                
+                $scope.dataFrm.AdocumentArray[idx].myloader = true;      
+                
+                objSendData.file_id = $scope.dataFrm.AdocumentArray[idx].file_id;  
+                objSendData.PATH_TO_FILE = $scope.dataFrm.AdocumentArray[idx].PATH_TO_FILE;
+                objSendData.FILE_NAME = $scope.dataFrm.AdocumentArray[idx].FILE_NAME;
+                
+                //console.log(objSendData);
+                //return false;
+                
+                /*
+                // IF Mulitple Locations of Delete are thre than use FROM variable ====
+                if( parseInt(FROM) == parseInt(1) ){
+                    /// Delete Call From Owner List
+                    $scope.dataFrm.IdocumentArray[idx].myloader = true; 
+                    
+                    objSendData.file_id = $scope.dataFrm.IdocumentArray[idx].file_id;  
+                    objSendData.PATH_TO_FILE = $scope.dataFrm.IdocumentArray[idx].PATH_TO_FILE;    
+                                           
+                }else if( parseInt(FROM) == parseInt(2) ){
+                    /// Delete Call From Investigator List
+                    $scope.dataFrm.AdocumentArray[idx].myloader = true;      
+                    
+                    objSendData.file_id = $scope.dataFrm.AdocumentArray[idx].file_id;  
+                    objSendData.PATH_TO_FILE = $scope.dataFrm.AdocumentArray[idx].PATH_TO_FILE;    
+                                  
+                }else if( parseInt(FROM) == parseInt(3) ){
+                    /// Delete Call From Owner List
+                    $scope.dataFrm.CdocumentArray[idx].myloader = true; 
+                    
+                    objSendData.file_id = $scope.dataFrm.CdocumentArray[idx].file_id;  
+                    objSendData.PATH_TO_FILE = $scope.dataFrm.CdocumentArray[idx].PATH_TO_FILE;    
+                                           
+                }
+                */  
+                
+                //alert(idx + "==========" + $scope.dataFrm.AdocumentArray[idx].file_id + "===========" + objSendData.PATH_TO_FILE);
+                var promiseREM = $http({method: 'POST', url: '<?php echo PAGE_AJAX;?>', data: objSendData});
+                
+                promiseREM.then(
+                    function(payload) {
+                        
+                        //alert("DEL Complete: " + FROM);
+                        
+                        //console.clear();
+                        if( parseInt(FROM) == parseInt(2) ){
+                            $scope.dataFrm.AdocumentArray[idx].myloader = false;
+                            $scope.dataFrm.AdocumentArray.splice(idx, 1);                            
+                        }
+                        
+                    },
+                    function(errorPayload) {
+                         console.log('failure loading remove file', errorPayload);
+                    } 
+                    
+                );
+                
+                 
+            } 
+        };
+        
+        
+        
+        $scope.showThumbnail = function(EXT){                      
+          return ( EXT == 'jpg' || EXT == 'jpeg' || EXT == 'gif' || EXT == 'png' || EXT == 'bmp' || EXT == 'tif' );  
+        };
+          
+        $scope.submit = function() {
+            //$scope.dataFrm
+            //console.log($scope.dataFrm);
+            //return false;
+            
+            $scope.submitProcess = 1;
+            $scope.dataFrm.type = 'saveData';
+            if(!$routeParams.author_id){
+                $scope.dataFrm.author_id = 0;
+            }            
+            $http({method: 'POST', url: '<?php echo PAGE_AJAX;?>', data: $scope.dataFrm}).then(function(response){
+                $scope.submitProcess = 2;
+                $scope.submitProcessMsg = response.data.MSG;
+              
+                //console.log(response);
+                
+                
+                
+                //return false;
+                
+                $timeout(function(){
+                    $scope.submitProcess = 0;
+                    if(response.data.SUCCESS == '1') {
+                        
+                        if(parseInt($routeParams.author_id) > parseInt(0))
+                        {
+                            location.href = "author.php#/listAuthor";
+                            //$location.url("/listAuthor/1/");
+                        }
+                        else
+                        {
+                            $scope.hTitle = 'Add';
+                            $scope.openForm = 0;
+                            $scope.dataFrm = {};
+                            $scope.dataFrm.status = true;
+                            ///$scope.chkUsernameMsg = '';                            
+                            
+                            
+                            
+                        }
+                        
+                    }
+                }, 2000);
+
+
+            });
+
+        };
+        
+        
+        ///////////////////Check clint
+        
+        /*
+         $scope.chkUsername = function(){
+        
+            $scope.chkUsernameMsg = "";
+           
+            
+            if($scope.dataFrm.username)
+            {
+                $scope.sel_check_load = true;
+                
+                var objSendData = {};
+                objSendData.type = "chkUsername";
+                objSendData.via = "<?php //echo CONSTANT_AUTHOR; ?>";
+                objSendData.username = $scope.dataFrm.username;
+                objSendData.ID = $scope.dataFrm.author_id;
+                //alert(objSendData.ID);
+                
+                var promise_chkUsername = $http({method: 'POST', url: '<?php //echo PAGE_AJAX_COMMON;?>', data: objSendData});
+                
+                promise_chkUsername.then(
+                    function(payload) {
+                        //console.log(payload.data.dataRow); 
+                        //alert(payload.data.dataRow[0].ct)
+                        
+                        if(parseInt(payload.data.dataRow[0].ct) > parseInt(0)) 
+                        {
+                            $scope.chkUsernameMsg = '<font color="red"> &#x2718; Added -' + $scope.dataFrm.username + "</font>" ;
+                            $scope.dataFrm.username = "";
+                        }
+                        else if(payload.data.dataRow[0].ct == parseInt(0)) 
+                        {
+                            $scope.chkUsernameMsg = '<font color="#77B900"> &#x2714;</font>';
+                        }
+                        else
+                        {
+                            $scope.chkUsernameMsg = '';
+                        } 
+                        
+                        $scope.sel_check_load = false;   
+                                       
+                    },
+                    function(errorPayload) {
+                        $scope.sel_check_load = false;
+                    } 
+                );
+               
+            }
+            
+            
+        }; 
+        
+        */
+        
+          
+    }]); 
+     
+    ///////////////////List ///////////////////////////////////////////////////////////////////////
+    
+     
+    angular.module('cmsApp').controller('authorListController', ['$scope', '$http', '$httpParamSerializer', '$location', '$routeParams', 'myConfig', '$timeout', '$filter','$window','$q','authorDetailFactory', function($scope, $http, $httpParamSerializer, $location, $routeParams, myConfig, $timeout, $filter,$window,$q,authorDetailFactory){
+        
+        //console.log("ddddddddddddd");
+        //alert("LLLLLLLLLLLLLL");
+        //return false;
+         
+        $scope.allAuthorArray = {};
+        $scope.searchedFields = {};
+        $scope.fullPageLoader = 0;
+        $scope.listPageLoader = 1;
+        $scope.searchFrm = {};
+        $scope.totalItems = 0;
+        $scope.itemsPerPage = '50'; // this should match however many results your API puts on one page
+
+        $scope.pagination = {
+            current: $routeParams.page
+        };
+
+        $scope.pageChanged = function(newPage) {
+            
+            var objData = {};
+            
+            objData.sType = $location.search().sType || "";
+            objData.sName = $location.search().sName || "";
+            objData.sEmail = $location.search().sEmail || "";
+            objData.sLogin = $location.search().sLogin || "";
+            objData.sStatus = $location.search().sStatus || "";
+            objData.m = Math.random();
+            
+            $location.url("/listAuthor/" + newPage + "/").search(objData);
+            
+        };
+        
+        
+        var promise = authorDetailFactory.getDetailFactory('');
+         
+                
+        promise.then(
+            function(payload) {
+                
+                //alert("DSfsfsffs");
+                //console.log(payload);
+                $scope.allAuthorArray = payload.data.data;
+                $scope.searchedFields = payload.data.searchedFields;
+                $scope.totalItems = payload.data.total_records;
+                $scope.listPageLoader = 0;
+                
+                $scope.showCheckAll = true;
+                
+                
+                
+            },
+            function(errorPayload) {
+                console.log('failure loading', errorPayload);
+                $scope.listPageLoader = 0;
+            }
+        );
+
+        $scope.clearSearch = function() {
+            $scope.searchFrm = {};
+            $scope.searchFrm.m = Math.random();
+            $location.url("/listAuthor/1/").search($scope.searchFrm);
+
+        };
+
+        $scope.search = function() {
+            
+            //alert("---");
+            $scope.searchFrm.m = Math.random();
+            $location.url("/listAuthor/1/").search($scope.searchFrm);
+        };
+        
+        
+        
+        $scope.updateStatus = function(author_id, current_status) {
+            
+            //alert("Update Status" + author_id + "=======" + current_status);
+            if(parseInt(current_status) == parseInt(1)){
+                current_status = 0;
+            }else{
+                current_status = 1;
+            }
+            
+            var foundRowItem = $filter('filter')($scope.allAuthorArray, { author_id: author_id  }, true)[0]; 
+            //get the index
+            var foundRowIndex = $scope.allAuthorArray.indexOf( foundRowItem );
+            
+            $scope.allAuthorArray[foundRowIndex].loading = true;
+             
+            //// update ajax here ========
+            $http({method: 'POST', url: '<?php echo PAGE_AJAX;?>', data: {type:'updateStatus', 'author_id': author_id, 'status': current_status}}).then(function(response){
+                //console.log(response);
+                $scope.allAuthorArray[foundRowIndex].loading = false;
+                $scope.allAuthorArray[foundRowIndex].status = current_status;
+                 
+                
+            }); 
+        };
+        
+        
+          
+         
+        $scope.deleteData = function(author_id) {
+            var c = confirm("Are you sure you wish to delete?");
+            if(c)
+            {
+               // alert($scope.fullPageLoader);
+
+                    $scope.fullPageLoader=1;
+
+
+                $http({method: 'POST', url: '<?php echo PAGE_AJAX;?>', data: {type: 'deleteData', 'author_id': author_id}}).then(function(response){
+                    $scope.successMsg = response.data.MSG;
+
+                    $timeout(function(){
+                        $scope.fullPageLoader = 0;
+                        if(response.data.SUCCESS == '1')
+                        {
+                            $scope.pageChanged(1);
+                        }
+                    }, 1000);
+                });
+            }
+        };  
+        
+        
+        
+        ///============ FOR CHECK ALL CHECKBOX ================
+        $scope.cId = {
+            roles: []
+        };
+
+        $scope.checkAll = function(chk) {
+            if(chk == "YES") {
+                $scope.cId.roles = angular.copy($scope.allAuthorArray);
+            } else {
+                $scope.cId.roles = [];
+            }
+        };
+
+        $scope.successMsg = '';
+        ///////============ DELETE ALL ================================
+        $scope.deleteAll = function() {
+
+            if($scope.cId.roles.length > 0)
+            {
+                var c = confirm("Are you sure you wish to delete?");
+                if(c)
+                {
+                     
+                    $scope.fullPageLoader = 1;
+                    $http({method: 'POST', url: '<?php echo PAGE_AJAX;?>', data: {type: 'deleteAllData', 'DIDS': $scope.cId.roles}}).then(function(response){
+               
+                    
+                        //console.log(response);
+                        $scope.successMsg = response.data.MSG;
+
+                        $timeout(function(){
+                            $scope.fullPageLoader = 0;
+                             
+                            if(response.data.SUCCESS == '1')
+                            {
+                                $scope.pageChanged(1);
+                            }
+                            
+                        }, 2000);
+
+                    });
+                }
+            }
+            else
+            {
+                alert("Please select atlist one option");
+            }
+
+
+        };
+        
+  
+          
+    }]); 
+     
+     
+})();   
+      </script>
+      
+
+<?php
+include("footer.php");
+?>
